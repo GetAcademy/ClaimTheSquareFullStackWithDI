@@ -12,13 +12,13 @@ namespace ClaimTheSquareFullStackWithDI.DependencyInjection
         }
         public Task<IEnumerable<TextObject>> ReadAll()
         {
-            return Task.FromResult(_textObjects);
+            return Task.FromResult((IEnumerable<TextObject>)_textObjects);
         }
 
-        public bool Create(TextObject textObject)
+        public Task<bool> Create(TextObject textObject)
         {
             _textObjects.Add(textObject);
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

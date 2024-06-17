@@ -4,7 +4,7 @@ namespace ClaimTheSquareFullStackWithDI.DependencyInjection
 {
     interface ITextObjectRespository
     {
-        IEnumerable<TextObject> ReadAll();
-        bool Create(TextObject textObject);
+        Task<IEnumerable<TextObject>> ReadAll();
+        Task<bool> Create(TextObject textObject);
     }
 }

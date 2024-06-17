@@ -1,23 +1,21 @@
-using System.Data.SqlClient;
 using ClaimTheSquareFullStack.Model;
-using Dapper;
+using ClaimTheSquareFullStackWithDI.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+var connStr = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MyTextObjects;Integrated Security=True";
+builder.Services.AddSingleton(new SqlConnectionFactory(connStr));
+builder.Services.AddScoped<ITextObjectRespository, InMemoryTextObjectRepository>();
+
 var app = builder.Build();
 app.UseHttpsRedirection();
 
-var connection = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MyTextObjects;Integrated Security=True";
-
-app.MapGet("/textobject", async () =>
+app.MapGet("/textobject", async (ITextObjectRespository repo) =>
 {
-    var conn = new SqlConnection(connection);
-    var textobjects = await conn.QueryAsync<TextObject>("SELECT * FROM TextObject");
-    return textobjects;
+    return await repo.ReadAll();
 });
-app.MapPost("/textobject", async (TextObject textobject) =>
+app.MapPost("/textobject", async (ITextObjectRespository repo, TextObject textobject) =>
 {
-    var conn = new SqlConnection(connection);
-    var rowsAffected = await conn.ExecuteAsync("INSERT INTO TextObject VALUES (@Index, @Text, @ForeColor, @BackColor)", textobject);
+    return await repo.Create(textobject);
 });
 app.UseStaticFiles();
 app.Run();
